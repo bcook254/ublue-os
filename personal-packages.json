@@ -1,0 +1,20 @@
+{
+    "all": {
+        "include": {
+            "all": [
+                "btop",
+                "eza",
+                "git-lfs",
+                "tealdeer",
+                "zsh"
+            ]
+        },
+        "exclude": {
+            "all": [
+                "firefox",
+                "firefox-langpacks",
+                "htop"
+            ]
+        }
+    }
+}
