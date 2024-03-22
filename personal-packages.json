@@ -2,6 +2,7 @@
     "all": {
         "include": {
             "all": [
+                "bat",
                 "btop",
                 "eza",
                 "git-lfs",
