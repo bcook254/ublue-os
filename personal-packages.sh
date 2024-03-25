@@ -33,18 +33,3 @@ else
     echo "No packages to install."
 
 fi
-
-# Install smallstep step-cli
-# https://github.com/smallstep/cli
-curl -Lo /tmp/step-cli_amd64.rpm https://dl.smallstep.com/cli/docs-cli-install/latest/step-cli_amd64.rpm
-rpm -i /tmp/step-cli_amd64.rpm
-/usr/bin/step-cli completion zsh > /usr/share/zsh/site-functions/_step
-
-# Install rbw
-# https://github.com/doy/rbw
-mkdir /tmp/rbw
-curl -Lo /tmp/rbw/rbw_linux_amd64.tar.gz https://github.com/doy/rbw/releases/download/1.9.0/rbw_1.9.0_linux_amd64.tar.gz
-tar -C /tmp/rbw -xf /tmp/rbw/rbw_linux_amd64.tar.gz
-cp /tmp/rbw/rbw /tmp/rbw/rbw-agent /usr/bin
-cp /tmp/rbw/completion/bash /usr/share/bash-completion/completions/rbw
-cp /tmp/rbw/completion/zsh /usr/share/zsh/site-functions/_rbw
