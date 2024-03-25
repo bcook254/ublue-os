@@ -7,6 +7,7 @@
                 "eza",
                 "git-lfs",
                 "gnome-shell-extension-dash-to-dock",
+                "gnome-shell-extension-user-theme",
                 "tealdeer",
                 "zsh"
             ]
@@ -23,7 +24,7 @@
                 "gnome-shell-extension-places-menu",
                 "gnome-shell-extension-window-list",
                 "gnome-software-rpm-ostree",
-		        "gnome-tour",
+                "gnome-tour",
                 "htop"
             ]
         }
