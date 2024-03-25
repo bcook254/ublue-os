@@ -8,7 +8,7 @@ FROM ${BASE_IMAGE}:${FEDORA_MAJOR_VERSION} AS personal
 ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-silverblue}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-39}"
 
-COPY personal-install.sh personal-packages.json workarounds.sh github-release-install.sh /tmp/
+COPY install.sh personal-packages.json personal-packages.sh workarounds.sh github-release-install.sh /tmp/
 
 RUN /tmp/install.sh
 

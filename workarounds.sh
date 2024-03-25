@@ -6,4 +6,4 @@ set -oeux pipefail
 ln -sf /usr/bin/step-cli /etc/alternatives/step && ln -sf /etc/alternatives/step /usr/bin/step
 
 # Step CLI RPM does not create zsh completions
-step-cli completion zsh > /usr/share/zsh/site-functions/_step
+/usr/bin/step-cli completion zsh > /usr/share/zsh/site-functions/_step

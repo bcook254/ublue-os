@@ -6,6 +6,7 @@
                 "btop",
                 "eza",
                 "git-lfs",
+                "gnome-shell-extension-dash-to-dock",
                 "tealdeer",
                 "zsh"
             ]
@@ -14,6 +15,15 @@
             "all": [
                 "firefox",
                 "firefox-langpacks",
+                "gnome-classic-session",
+                "gnome-initial-setup",
+                "gnome-shell-extension-apps-menu",
+                "gnome-shell-extension-background-logo",
+                "gnome-shell-extension-launch-new-instance",
+                "gnome-shell-extension-places-menu",
+                "gnome-shell-extension-window-list",
+                "gnome-software-rpm-ostree",
+		        "gnome-tour",
                 "htop"
             ]
         }
