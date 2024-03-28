@@ -1,18 +1,20 @@
-ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-silverblue}"
-ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:--surface}"
-ARG SOURCE_IMAGE="${SOURCE_IMAGE:-${BASE_IMAGE_NAME}${IMAGE_FLAVOR}}"
-ARG BASE_IMAGE="ghcr.io/ublue-os/${SOURCE_IMAGE}"
+ARG SOURCE_NS="${SOURCE_NS:-ghcr.io}"
+ARG SOURCE_ORG="${SOURCE_ORG:-ublue-os}"
+ARG IMAGE_NAME="${IMAGE_IMAGE:-silverblue}"
+ARG IMAGE_VARIANT="${IMAGE_VARIANT:-main}"
 ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-39}"
 
-FROM ${BASE_IMAGE}:${FEDORA_MAJOR_VERSION} AS personal
-ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-silverblue}"
-ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-39}"
+FROM ${SOURCE_NS}/${SOURCE_ORG}/${IMAGE_NAME}-${IMAGE_VARIANT}:${FEDORA_MAJOR_VERSION} AS main
 
-COPY install.sh \
-     personal-packages.json \
-     personal-packages.sh \
+ARG IMAGE_NAME="${IMAGE_NAME:-silverblue}"
+ARG FEDORA_MAJOR_VERSION="${FEDORA_MAJOR_VERSION:-39}"
+ARG RPMFUSION_MIRROR=""
+
+COPY github-release-install.sh \
+     install.sh \
+     packages.json \
+     packages.sh \
      workarounds.sh \
-     github-release-install.sh \
      /tmp/
 
 RUN /tmp/install.sh
