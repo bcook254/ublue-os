@@ -5,10 +5,10 @@ curl --output-dir /usr/share/fonts/meslolgs-nf -LO https://github.com/romkatv/po
 curl --output-dir /usr/share/fonts/meslolgs-nf -LO https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf
 curl --output-dir /usr/share/fonts/meslolgs-nf -LO https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf
 curl --output-dir /usr/share/fonts/meslolgs-nf -LO https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf
-fc-cache -v
+fc-cache --system-only --really-force --verbose
 
-# Setup personal packages
-/tmp/personal-packages.sh
+# Setup packages
+/tmp/packages.sh /tmp/packages.json
 
 # Install packages directly from GitHub
 /tmp/github-release-install.sh smallstep/cli amd64
