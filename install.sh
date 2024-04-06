@@ -21,3 +21,11 @@ tar -C /tmp/rbw -xf /tmp/rbw/rbw_linux_amd64.tar.gz
 cp /tmp/rbw/rbw /tmp/rbw/rbw-agent /usr/bin
 cp /tmp/rbw/completion/bash /usr/share/bash-completion/completions/rbw
 cp /tmp/rbw/completion/zsh /usr/share/zsh/site-functions/_rbw
+
+# Install git-credential-manager
+# https://github.com/git-ecosystem/git-credential-manager
+mkdir /tmp/gcm
+curl -Lo /tmp/gcm/gcm-linux_amd64.tar.gz https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.4.1/gcm-linux_amd64.2.4.1.tar.gz
+tar -C /tmp/gcm -xf /tmp/gcm/gcm-linux_amd64.tar.gz
+mkdir /usr/lib/gcm
+cp /tmp/gcm/git-credential-manager /tmp/gcm/libHarfBuzzSharp.so /tmp/gcm/libSkiaSharp.so /usr/lib/gcm/
