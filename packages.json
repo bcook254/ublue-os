@@ -28,5 +28,15 @@
                 "htop"
             ]
         }
+    },
+    "40": {
+        "include": {
+            "all": []
+        },
+        "exclude": {
+            "all": [
+                "gnome-classic-session-xsession"
+            ]
+        }
     }
 }
