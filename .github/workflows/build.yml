@@ -1,4 +1,4 @@
-name: Build Surface
+name: Build Images
 on:
   schedule:
     - cron: '29 17 * * 0,2,5' # UTC 17:29 Sunday,Tuesday,Friday
@@ -28,15 +28,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        major_version: [39, 40]
+        major_version: [40]
         image_name: [silverblue]
         hwe_variant: [surface, nvidia]
         include:
           - major_version: 40
-            is_latest_version: false
-            is_stable_version: false
-            is_gts_version: false
-          - major_version: 39
             is_latest_version: true
             is_stable_version: true
             is_gts_version: false
