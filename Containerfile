@@ -14,14 +14,13 @@ COPY github-release-install.sh \
      install.sh \
      packages.json \
      packages.sh \
-     workarounds.sh \
+     post-install.sh \
      /tmp/
 
-RUN /tmp/install.sh
-
-RUN /tmp/workarounds.sh
-
-# Cleanup everything we don't need
-RUN rm -rf /tmp/* /var/* && \    
+RUN /tmp/install.sh && \
+    /tmp/post-install.sh && \
+    # Cleanup everything we don't need
+    rm -rf /tmp/* /var/* && \
     ostree container commit && \
-    mkdir -p /var/tmp && chmod -R 1777 /tmp /var/tmp
+    mkdir -p /var/tmp && \
+    chmod -R 1777 /tmp /var/tmp
