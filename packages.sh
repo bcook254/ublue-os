@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euxo pipefail
+set -oeux pipefail
 
 PACKAGE_MANIFEST=$1
 RELEASE="$(rpm -E %fedora)"
