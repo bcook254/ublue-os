@@ -33,14 +33,14 @@ LATEST=${3}
 usage() {
   echo "$0 ORG_PROJ ARCH_FILTER"
   echo "    ORG_PROJ    - organization/projectname"
-  echo "    ARCH_FILTER - optional extra filter to further limit rpm selection"
+  echo "    ARCH_FILTER - arch to further limit rpm selection"
   echo "    LATEST      - optional tag override for latest release (eg, nightly-dev)"
 
 }
 
 if [ -z ${ORG_PROJ} ]; then
   usage
-  exit 1
+  exit 2
 fi
 
 if [ -z ${ARCH_FILTER} ]; then
@@ -60,15 +60,18 @@ API_JSON=$(mktemp /tmp/api-XXXXXXXX.json)
 API="https://api.github.com/repos/${ORG_PROJ}/releases/${RELTAG}"
 
 # retry up to 5 times with 5 second delays for any error included HTTP 404 etc
-curl --fail --retry 5 --retry-delay 5 --retry-all-errors -sL ${API} -o ${API_JSON}
-RPM_URLS=$(cat ${API_JSON} \
+if ! curl --fail --retry 5 --retry-delay 5 --retry-all-errors -sL ${API} -o ${API_JSON}; then
+  exit 3
+fi
+RPM_URLS=($(cat ${API_JSON} \
   | jq \
     -r \
     --arg arch_filter "${ARCH_FILTER}" \
-    '.assets | sort_by(.created_at) | reverse | .[] | select(.name|test($arch_filter)) | select (.name|test("rpm$")) | .browser_download_url')
-for URL in ${RPM_URLS}; do
-  # WARNING: in case of multiple matches, this only installs the first matched release
-  echo "execute: rpm-ostree install \"${URL}\""
-  rpm-ostree install "${URL}"
-  break
-done
+    '.assets | sort_by(.created_at) | reverse | .[] | select(.name|test($arch_filter)) | select (.name|test("rpm$")) | .browser_download_url'))
+if [ "${#RPM_URLS[@]}" -eq 0 ]; then
+  echo "no rpm assets were found"
+  exit 4
+fi
+# WARNING: in case of multiple matches, this only installs the first matched release
+echo "execute: rpm-ostree install \"${RPM_URLS}\""
+rpm-ostree install "${RPM_URLS}";

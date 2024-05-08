@@ -1,3 +1,7 @@
+#!/bin/bash
+
+set -euxo pipefail
+
 # Install extras fonts
 # MesloLGS NF (used for p10k)
 mkdir -p /usr/share/fonts/meslolgs-nf
