@@ -41,7 +41,7 @@ jobs:
     steps:
       # Checkout push-to-registry action GitHub repository
       - name: Checkout Push to Registry action
-        uses: actions/checkout@v4.1.5
+        uses: actions/checkout@v4.1.7
 
       - name: Verify base image
         uses: EyeCantCU/cosign-action/verify@v0.2.2
