@@ -30,7 +30,7 @@ jobs:
       matrix:
         major_version: [40]
         image_name: [silverblue]
-        hwe_variant: [surface, nvidia]
+        hwe_variant: [main, surface]
         include:
           - major_version: 40
             is_latest_version: true
