@@ -44,7 +44,7 @@ jobs:
         uses: actions/checkout@v4.1.7
 
       - name: Verify base image
-        uses: EyeCantCU/cosign-action/verify@v0.2.2
+        uses: EyeCantCU/cosign-action/verify@v0.3.0
         with:
           containers: ${{ matrix.image_name }}-${{ matrix.hwe_variant }}:${{ matrix.major_version }}
           pubkey: https://raw.githubusercontent.com/ublue-os/main/main/cosign.pub
