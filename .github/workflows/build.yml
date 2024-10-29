@@ -20,7 +20,7 @@ concurrency:
 jobs:
   build_ublue:
     name: Build and push image
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: write
@@ -28,13 +28,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        major_version: [40]
+        major_version: [40, 41]
         image_name: [silverblue]
         hwe_variant: [main, surface]
         include:
           - major_version: 40
             is_latest_version: true
             is_stable_version: true
+            is_gts_version: false
+          - major_version: 41
+            is_latest_version: false
+            is_stable_version: false
             is_gts_version: false
     env:
       IMAGE_NAME: ${{ matrix.image_name }}-${{ matrix.hwe_variant }}
