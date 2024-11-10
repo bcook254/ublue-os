@@ -40,6 +40,9 @@ jobs:
             is_latest_version: false
             is_stable_version: false
             is_gts_version: false
+        exclude:
+          - major_version: 41
+            hwe_variant: surface
     env:
       IMAGE_NAME: ${{ matrix.image_name }}-${{ matrix.hwe_variant }}
     steps:
