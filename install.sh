@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 
 set -oeux pipefail
 
@@ -12,10 +12,10 @@ curl --output-dir /usr/share/fonts/meslolgs-nf -sLo "MesloLGS-NF-Bold-Italic.ttf
 fc-cache --system-only --really-force --verbose
 
 # Setup packages
-/tmp/packages.sh /tmp/packages.json
+/ctx/packages.sh /ctx/packages.json
 
 # Install packages directly from GitHub
-/tmp/github-release-install.sh smallstep/cli amd64
+/ctx/github-release-install.sh --repository=smallstep/cli --asset-filter=amd64
 
 # Install rbw
 # https://github.com/doy/rbw
@@ -31,3 +31,18 @@ curl -sLo /tmp/gcm/gcm-linux_amd64.tar.gz https://github.com/git-ecosystem/git-c
 tar -C /tmp/gcm -xf /tmp/gcm/gcm-linux_amd64.tar.gz
 mkdir /usr/lib/gcm
 cp /tmp/gcm/git-credential-manager /tmp/gcm/libHarfBuzzSharp.so /tmp/gcm/libSkiaSharp.so /usr/lib/gcm/
+
+# copy any shared sys files
+if [[ -d /ctx/"${IMAGE_VARIANT}"/system_files/shared ]]; then
+    rsync -rvK /ctx/"${IMAGE_VARIANT}"/system_files/shared/ /
+fi
+
+# copy any spin specific files, eg silverblue
+if [[ -d "/ctx/${IMAGE_VARIANT}/system_files/${IMAGE_NAME}" ]]; then
+    rsync -rvK "/ctx/${IMAGE_VARIANT}/system_files/${IMAGE_NAME}"/ /
+fi
+
+# install any packages from packages.json
+if [ -f "/ctx/${IMAGE_VARIANT}/packages.json" ]; then
+    /ctx/packages.sh /ctx/"${IMAGE_VARIANT}"/packages.json
+fi
