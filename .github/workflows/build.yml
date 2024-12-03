@@ -30,21 +30,14 @@ jobs:
       matrix:
         major_version: [40, 41]
         image_name: [silverblue]
-        hwe_variant: [main, surface]
+        image_variant: [main, surface]
         include:
           - major_version: 40
             is_latest_version: true
-            is_stable_version: true
-            is_gts_version: false
           - major_version: 41
             is_latest_version: false
-            is_stable_version: false
-            is_gts_version: false
-        exclude:
-          - major_version: 41
-            hwe_variant: surface
     env:
-      IMAGE_NAME: ${{ matrix.image_name }}-${{ matrix.hwe_variant }}
+      IMAGE_NAME: ${{ matrix.image_name }}-${{ matrix.image_variant }}
     steps:
       # Checkout push-to-registry action GitHub repository
       - name: Checkout Push to Registry action
@@ -53,8 +46,39 @@ jobs:
       - name: Verify base image
         uses: EyeCantCU/cosign-action/verify@v0.3.0
         with:
-          containers: ${{ matrix.image_name }}-${{ matrix.hwe_variant }}:${{ matrix.major_version }}
+          containers: ${{ matrix.image_name }}-main:${{ matrix.major_version }}
           pubkey: https://raw.githubusercontent.com/ublue-os/main/main/cosign.pub
+
+      - name: Get kernel version
+        id: version
+        shell: bash
+        run: |
+          if [[ ${{ matrix.image_variant }} =~ surface ]]; then
+            container_name="fq-$(uuidgen)"
+            dnf="podman exec $container_name dnf"
+            curl="podman exec $container_name curl"
+
+            podman run --entrypoint /bin/bash --name "$container_name" -dt "quay.io/fedora/fedora:${{ matrix.major_version }}"
+            $dnf install -y dnf-plugins-core
+          fi
+
+          case ${{ matrix.image_variant }} in
+            "surface")
+              $curl -Lo /etc/yum.repos.d/linux-surface.repo https://pkg.surfacelinux.com/fedora/linux-surface.repo
+              linux=$($dnf repoquery --repoid linux-surface --whatprovides kernel-surface | sort -V | tail -n1 | sed 's/.*://')
+              ;;
+            "main")
+              linux=$(skopeo inspect docker://ghcr.io/ublue-os/${{ matrix.image_name }}-main:${{ matrix.major_version }} | jq -r '.Labels["ostree.linux"]' )
+              ;;
+          esac
+
+          if [ -z "$linux" ] || [ "null" = "$linux" ]; then
+            echo "inspected image linux version must not be empty or null"
+            exit 1
+          fi
+
+          echo "Kernel Version is ${linux}"
+          echo "KERNEL_VERSION=${linux}" >> $GITHUB_OUTPUT
 
       - name: Generate tags
         id: generate-tags
@@ -64,25 +88,21 @@ jobs:
           TIMESTAMP="$(date +%Y%m%d)"
 
           MAJOR_VERSION="${{ matrix.major_version }}"
-          VARIANT="${{ matrix.hwe_variant }}"
+          VARIANT="${{ matrix.image_variant }}"
 
           # Have tags for tracking builds during pull request
           COMMIT_TAGS=()
           SHA_SHORT="${GITHUB_SHA::7}"
           COMMIT_TAGS+=("pr-${{ github.event.number }}-${MAJOR_VERSION}-${VARIANT}")
           COMMIT_TAGS+=("${SHA_SHORT}-${MAJOR_VERSION}-${VARIANT}")
-          if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
-             [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
+          if [[ "${{ matrix.is_latest_version }}" == "true" ]]; then
               COMMIT_TAGS+=("pr-${{ github.event.number }}")
               COMMIT_TAGS+=("${SHA_SHORT}")
           fi
 
           BUILD_TAGS=("${MAJOR_VERSION}" "${MAJOR_VERSION}-${TIMESTAMP}")
-          if [[ "${{ matrix.is_latest_version }}" == "true" ]] && \
-             [[ "${{ matrix.is_stable_version }}" == "true" ]]; then
+          if [[ "${{ matrix.is_latest_version }}" == "true" ]]; then
               BUILD_TAGS+=("latest")
-          elif [[ "${{ matrix.is_gts_version }}" == "true" ]]; then
-              BUILD_TAGS+=("gts")
           fi
 
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
@@ -107,7 +127,7 @@ jobs:
         shell: bash
         run: |
             set -eo pipefail
-            ver=$(skopeo inspect docker://ghcr.io/ublue-os/${{ matrix.image_name }}-${{ matrix.hwe_variant }}:${{ matrix.major_version }} | jq -r '.Labels["org.opencontainers.image.version"]')
+            ver=$(skopeo inspect docker://ghcr.io/ublue-os/${{ matrix.image_name }}-main:${{ matrix.major_version }} | jq -r '.Labels["org.opencontainers.image.version"]')
             if [ -z "$ver" ] || [ "null" = "$ver" ]; then
               echo "inspected image version must not be empty or null"
               exit 1
@@ -124,7 +144,8 @@ jobs:
           labels: |
             org.opencontainers.image.title=${{ env.IMAGE_NAME }}
             org.opencontainers.image.version=${{ steps.labels.outputs.VERSION }}
-            org.opencontainers.image.description=ublue-os ${{ matrix.image_name }}${{ contains(matrix.hwe_variant,'surface') && ' for Surface devices' || ''}}${{ contains(matrix.hwe_variant,'nvidia') && ' with Nvidia drivers' || ''}}.
+            org.opencontainers.image.description=ublue-os ${{ matrix.image_name }}${{ contains(matrix.image_variant,'surface') && ' for Surface devices' || ''}}${{ contains(matrix.image_variant,'nvidia') && ' with Nvidia drivers' || ''}}.
+            ostree.linux=${{ steps.version.outputs.KERNEL_VERSION }}
             io.artifacthub.package.readme-url=https://raw.githubusercontent.com/${{ github.repository }}/main/README.md
             io.artifacthub.package.logo-url=https://avatars.githubusercontent.com/u/44739883?s=200&v=4
 
@@ -140,7 +161,8 @@ jobs:
             ${{ steps.generate-tags.outputs.alias_tags }}
           build-args: |
             IMAGE_NAME=${{ matrix.image_name }}
-            IMAGE_VARIANT=${{ matrix.hwe_variant }}
+            IMAGE_VARIANT=${{ matrix.image_variant }}
+            KERNEL_VERSION=${{ steps.version.outputs.KERNEL_VERSION }}
             FEDORA_MAJOR_VERSION=${{ matrix.major_version }}
           labels: ${{ steps.meta.outputs.labels }}
           oci: false
