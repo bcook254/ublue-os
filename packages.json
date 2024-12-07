@@ -8,6 +8,7 @@
                 "git-lfs",
                 "gnome-shell-extension-appindicator",
                 "gnome-shell-extension-dash-to-dock",
+                "gnome-shell-extension-search-light",
                 "tealdeer",
                 "zsh"
             ]
@@ -24,6 +25,7 @@
                 "gnome-shell-extension-places-menu",
                 "gnome-shell-extension-window-list",
                 "gnome-software-rpm-ostree",
+                "gnome-system-monitor",
                 "gnome-tour",
                 "htop"
             ]
