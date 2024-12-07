@@ -28,14 +28,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        major_version: [40, 41]
+        major_version: [41]
         image_name: [silverblue]
         image_variant: [main, surface]
         include:
-          - major_version: 40
-            is_latest_version: true
           - major_version: 41
-            is_latest_version: false
+            is_latest_version: true
     env:
       IMAGE_NAME: ${{ matrix.image_name }}-${{ matrix.image_variant }}
     steps:
