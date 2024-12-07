@@ -24,6 +24,7 @@
                 "gnome-shell-extension-places-menu",
                 "gnome-shell-extension-window-list",
                 "gnome-software-rpm-ostree",
+                "gnome-system-monitor",
                 "gnome-tour",
                 "htop"
             ]
