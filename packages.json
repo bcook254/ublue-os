@@ -8,7 +8,6 @@
                 "git-lfs",
                 "gnome-shell-extension-appindicator",
                 "gnome-shell-extension-dash-to-dock",
-                "gnome-shell-extension-search-light",
                 "tealdeer",
                 "zsh"
             ]
