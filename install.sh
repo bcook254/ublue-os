@@ -16,18 +16,19 @@ fc-cache --system-only --really-force --verbose
 
 # Install packages directly from GitHub
 /ctx/github-release-install.sh --repository=smallstep/cli --asset-filter=amd64
+/ctx/github-release-install.sh --repository=twpayne/chezmoi --asset-filter=x86_64
 
 # Install rbw
 # https://github.com/doy/rbw
 mkdir /tmp/rbw
-curl -sLo /tmp/rbw/rbw_linux_amd64.tar.gz https://github.com/doy/rbw/releases/download/1.9.0/rbw_1.9.0_linux_amd64.tar.gz
+curl -sLo /tmp/rbw/rbw_linux_amd64.tar.gz https://github.com/doy/rbw/releases/download/1.12.1/rbw_1.12.1_linux_amd64.tar.gz
 tar -C /tmp/rbw -xf /tmp/rbw/rbw_linux_amd64.tar.gz rbw rbw-agent
 cp /tmp/rbw/rbw /tmp/rbw/rbw-agent /usr/bin
 
 # Install git-credential-manager
 # https://github.com/git-ecosystem/git-credential-manager
 mkdir /tmp/gcm
-curl -sLo /tmp/gcm/gcm-linux_amd64.tar.gz https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.4.1/gcm-linux_amd64.2.4.1.tar.gz
+curl -sLo /tmp/gcm/gcm-linux_amd64.tar.gz https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.6.0/gcm-linux_amd64.2.6.0.tar.gz
 tar -C /tmp/gcm -xf /tmp/gcm/gcm-linux_amd64.tar.gz
 mkdir /usr/lib/gcm
 cp /tmp/gcm/git-credential-manager /tmp/gcm/libHarfBuzzSharp.so /tmp/gcm/libSkiaSharp.so /usr/lib/gcm/
