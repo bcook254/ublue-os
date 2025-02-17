@@ -41,12 +41,6 @@ jobs:
       - name: Checkout Push to Registry action
         uses: actions/checkout@v4.2.2
 
-      - name: Verify base image
-        uses: EyeCantCU/cosign-action/verify@v0.3.0
-        with:
-          containers: ${{ matrix.image_name }}-main:${{ matrix.major_version }}
-          pubkey: https://raw.githubusercontent.com/ublue-os/main/main/cosign.pub
-
       - name: Get kernel version
         id: version
         shell: bash
@@ -66,7 +60,7 @@ jobs:
               linux=$($dnf repoquery --repoid linux-surface --whatprovides kernel-surface | sort -V | tail -n1 | sed 's/.*://')
               ;;
             "main")
-              linux=$(skopeo inspect docker://ghcr.io/ublue-os/${{ matrix.image_name }}-main:${{ matrix.major_version }} | jq -r '.Labels["ostree.linux"]' )
+              linux=$(skopeo inspect docker://quay.io/fedora/fedora${{ contains(matrix.image_name,'base') && '' || '-'}}${{ matrix.image_name }}:${{ matrix.major_version }} | jq -r '.Labels["ostree.linux"]' )
               ;;
           esac
 
@@ -125,11 +119,12 @@ jobs:
         shell: bash
         run: |
             set -eo pipefail
-            ver=$(skopeo inspect docker://ghcr.io/ublue-os/${{ matrix.image_name }}-main:${{ matrix.major_version }} | jq -r '.Labels["org.opencontainers.image.version"]')
+            ver=$(skopeo inspect docker://quay.io/fedora/fedora${{ contains(matrix.image_name,'base') && '' || '-'}}${{ matrix.image_name }}:${{ matrix.major_version }} | jq -r '.Labels["org.opencontainers.image.version"]')
             if [ -z "$ver" ] || [ "null" = "$ver" ]; then
               echo "inspected image version must not be empty or null"
               exit 1
             fi
+            echo "Fedora Version is ${ver}"
             echo "VERSION=$ver" >> $GITHUB_OUTPUT
 
       # Build metadata
@@ -142,7 +137,7 @@ jobs:
           labels: |
             org.opencontainers.image.title=${{ env.IMAGE_NAME }}
             org.opencontainers.image.version=${{ steps.labels.outputs.VERSION }}
-            org.opencontainers.image.description=ublue-os ${{ matrix.image_name }}${{ contains(matrix.image_variant,'surface') && ' for Surface devices' || ''}}${{ contains(matrix.image_variant,'nvidia') && ' with Nvidia drivers' || ''}}.
+            org.opencontainers.image.description=abcook-os ${{ matrix.image_name }}${{ contains(matrix.image_variant,'surface') && ' for Surface devices' || ''}}${{ contains(matrix.image_variant,'nvidia') && ' with Nvidia drivers' || ''}}.
             ostree.linux=${{ steps.version.outputs.KERNEL_VERSION }}
             io.artifacthub.package.readme-url=https://raw.githubusercontent.com/${{ github.repository }}/main/README.md
             io.artifacthub.package.logo-url=https://avatars.githubusercontent.com/u/44739883?s=200&v=4
@@ -158,6 +153,7 @@ jobs:
           tags: |
             ${{ steps.generate-tags.outputs.alias_tags }}
           build-args: |
+            SOURCE_VARIANT=-${{ matrix.image_name }}
             IMAGE_NAME=${{ matrix.image_name }}
             IMAGE_VARIANT=${{ matrix.image_variant }}
             KERNEL_VERSION=${{ steps.version.outputs.KERNEL_VERSION }}
