@@ -4,5 +4,5 @@ set -eoux pipefail
 shopt -s extglob
 
 rm -rf /tmp/* || true
-rm -rf /var/!(cache)
-rm -rf /var/cache/!(rpm-ostree)
+find /var/lib /var/cache -maxdepth 1 -mindepth 1 ! -wholename /var/lib/alternatives ! -wholename /var/cache/rpm-ostree -type d -delete
+find /var -maxdepth 1 -mindepth 1 ! -wholename /var/lib ! -wholename /var/cache -type d -delete
