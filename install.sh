@@ -31,7 +31,10 @@ curl -Lo /etc/yum.repos.d/_copr_ublue-os_staging.repo https://copr.fedorainfracl
 #curl -Lo /etc/yum.repos.d/_copr_kylegospo_oversteer.repo https://copr.fedorainfracloud.org/coprs/kylegospo/oversteer/repo/fedora-"${RELEASE}"/kylegospo-oversteer-fedora-"${RELEASE}".repo
 
 rpm-ostree install \
-    /tmp/config-rpms/*.rpm \
+    /tmp/config-rpms/ublue-os-luks.noarch.rpm \
+    /tmp/config-rpms/ublue-os-signing.noarch.rpm \
+    /tmp/config-rpms/ublue-os-udev-rules.noarch.rpm \
+    /tmp/config-rpms/ublue-os-update-services.noarch.rpm \
     /tmp/akmods-rpms/*.rpm \
     fedora-repos-archive
 
@@ -40,12 +43,13 @@ curl -Lo /etc/yum.repos.d/negativo17-fedora-multimedia.repo https://negativo17.o
 sed -i '0,/enabled=1/{s/enabled=1/enabled=1\npriority=90/}' /etc/yum.repos.d/negativo17-fedora-multimedia.repo
 
 # use override to replace mesa and others with less crippled versions
+    #libva-intel-media-driver \
+
 rpm-ostree override replace \
   --experimental \
   --from repo='fedora-multimedia' \
     libheif \
     libva \
-    libva-intel-media-driver \
     mesa-dri-drivers \
     mesa-filesystem \
     mesa-libEGL \
